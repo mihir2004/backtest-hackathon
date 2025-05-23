@@ -16,7 +16,13 @@ export class TopicService {
     // TODO: Implement logic to get the topic ID for an index
     // 1. Query the database to find the topic_id where index_name matches and type is NULL
     // 2. Return the topic_id or throw an error if not found
-    return 0;
+    const res = await pool.query(
+      `SELECT topic_id FROM topics WHERE index_name = $1 AND type IS NULL`,
+      [indexName]
+    );
+    if (res.rowCount === 0)
+      throw new Error(`Index topic not found: ${indexName}`);
+    return res.rows[0].topic_id;
   }
 
   /**
@@ -33,7 +39,14 @@ export class TopicService {
     // TODO: Implement logic to get the topic ID for an option
     // 1. Query the database to find the topic_id for the given index, strike, and type
     // 2. Return the topic_id or throw an error if not found
-    return 0;
+    const res = await pool.query(
+      `SELECT topic_id FROM topics WHERE index_name = $1 AND strike = $2 AND type = $3`,
+      [indexName, strike, type]
+    );
+    if (res.rowCount === 0) {
+      throw new Error(`Option topic not found: ${indexName} ${strike} ${type}`);
+    }
+    return res.rows[0].topic_id;
   }
 
   /**
@@ -46,7 +59,17 @@ export class TopicService {
     // - BANKNIFTY: 100
     // - NIFTY, FINNIFTY: 50
     // - MIDCPNIFTY: 25
-    return 100;
+    switch (indexName.toUpperCase()) {
+      case "BANKNIFTY":
+        return 100;
+      case "NIFTY":
+      case "FINNIFTY":
+        return 50;
+      case "MIDCPNIFTY":
+        return 25;
+      default:
+        return 100;
+    }
   }
 
   /**
@@ -60,6 +83,17 @@ export class TopicService {
     // - BANKNIFTY: 30
     // - MIDCPNIFTY: 120
     // - FINNIFTY: 65
-    return 30;
+    switch (indexName.toUpperCase()) {
+      case "BANKNIFTY":
+        return 30;
+      case "NIFTY":
+        return 75;
+      case "MIDCPNIFTY":
+        return 120;
+      case "FINNIFTY":
+        return 65;
+      default:
+        return 1;
+    }
   }
 }

@@ -6,11 +6,11 @@ const TIMEZONE = "Asia/Kolkata";
  * Format a Date object to YYYY-MM-DD string
  * @param date The date to format
  */
+
 export function formatDate(date: Date): string {
   // TODO: Implement date formatting functionality
-  return "";
+  return moment(date).tz(TIMEZONE).format("YYYY-MM-DD");
 }
-
 /**
  * Convert time string to Date object
  * @param dateStr Date string in YYYY-MM-DD format
@@ -18,7 +18,9 @@ export function formatDate(date: Date): string {
  */
 export function createDateTime(dateStr: string, timeStr: string): Date {
   // TODO: Create a Date object from date string and time string
-  return new Date();
+  return moment
+    .tz(`${dateStr} ${timeStr}`, "YYYY-MM-DD HH:mm", TIMEZONE)
+    .toDate();
 }
 
 /**
@@ -33,14 +35,13 @@ export function isTimeInRange(
   endTime: string
 ): boolean {
   // TODO: Implement time range check functionality
-  return false;
+  const t = moment(time, "HH:mm");
+  const start = moment(startTime, "HH:mm");
+  const end = moment(endTime, "HH:mm");
+  return t.isSameOrAfter(start) && t.isSameOrBefore(end);
 }
 
 /**
  * Get the last N trading days
  * @param n Number of trading days to retrieve
  */
-export async function getLastNTradingDays(n: number): Promise<string[]> {
-  // TODO: Implement logic to get the last N trading days from the database
-  return [];
-}
